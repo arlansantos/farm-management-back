@@ -4,6 +4,9 @@ import { UpdateProducerDto } from './dto/update-producer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProducerEntity } from './entities/producer.entity';
 import { Repository } from 'typeorm';
+import { PageDto } from 'src/utils/dto/page.dto';
+import { paginate } from 'src/utils/helpers/paginate';
+import { IPaginateResult } from 'src/utils/helpers/paginate-result.interface';
 
 @Injectable()
 export class ProducerService {
@@ -26,9 +29,12 @@ export class ProducerService {
     return producer;
   }
 
-  async findAll(traceId: string): Promise<ProducerEntity[]> {
+  async findAll(pageDto: PageDto, traceId: string): Promise<IPaginateResult<ProducerEntity>> {
     this.logger.log(`[${traceId}] Listando produtores...`);
-    return await this.producerRepository.find();
+
+    const queryBuilder = this.producerRepository.createQueryBuilder('producer');
+
+    return await paginate( queryBuilder, 'producer', pageDto);
   }
 
   async findOne(id: string, traceId: string): Promise<ProducerEntity> {

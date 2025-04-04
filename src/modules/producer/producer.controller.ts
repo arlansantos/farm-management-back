@@ -9,12 +9,17 @@ import {
   Request,
   Put,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { ProducerService } from './producer.service';
 import { CreateProducerDto } from './dto/create-producer.dto';
 import { UpdateProducerDto } from './dto/update-producer.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProducerEntity } from './entities/producer.entity';
+import { PaginationQuery } from 'src/decorators/pagination-query.decorator';
+import { PageDto } from 'src/utils/dto/page.dto';
+import { IPaginateResult } from 'src/utils/helpers/paginate-result.interface';
+import { FindAllProducerResponseDto } from './dto/find-all-producer-response.dto';
 
 @ApiTags('producer')
 @Controller('producer')
@@ -46,12 +51,12 @@ export class ProducerController {
   @ApiResponse({
     status: 200,
     description: 'Produtores listados com sucesso',
-    type: ProducerEntity,
-    isArray: true,
+    type: FindAllProducerResponseDto,
   })
-  async findAll(@Request() req): Promise<ProducerEntity[]> {
+  @PaginationQuery()
+  async findAll(@Query() pageDto: PageDto, @Request() req): Promise<IPaginateResult<ProducerEntity>> {
     const traceId = req.traceId;
-    return await this.producerService.findAll(traceId);
+    return await this.producerService.findAll(pageDto, traceId);
   }
 
   @Get(':id')

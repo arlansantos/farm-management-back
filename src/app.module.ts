@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TraceInterceptor } from './interceptors/trace.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ProducerModule } from './producer/producer.module';
-import { ProducerEntity } from './producer/entities/producer.entity';
+import { ProducerModule } from './modules/producer/producer.module';
+import { ProducerEntity } from './modules/producer/entities/producer.entity';
 
 @Module({
   imports: [
