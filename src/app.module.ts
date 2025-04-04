@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TraceInterceptor } from './interceptors/trace.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ProducerModule } from './producer/producer.module';
+import { ProducerEntity } from './producer/entities/producer.entity';
 
 @Module({
   imports: [
@@ -14,9 +16,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      entities: [ProducerEntity],
       synchronize: true,
     }),
+    ProducerModule,
   ],
   controllers: [],
   providers: [

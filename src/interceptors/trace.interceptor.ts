@@ -1,5 +1,11 @@
 // src/interceptors/trace.interceptor.ts
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  Logger,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +30,9 @@ export class TraceInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => {
         const duration = Date.now() - start;
-        this.logger.log(`[${traceId}] Concluído ${req.method} ${req.url} em ${duration}ms`);
+        this.logger.log(
+          `[${traceId}] Concluído ${req.method} ${req.url} em ${duration}ms`,
+        );
       }),
     );
   }
