@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Request, Query, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Request, Query, ParseUUIDPipe, Patch } from '@nestjs/common';
 import { FarmService } from './farm.service';
 import { CreateFarmDto } from './dto/create-farm.dto';
 import { UpdateFarmDto } from './dto/update-farm.dto';
@@ -8,6 +8,7 @@ import { PaginationQuery } from 'src/decorators/pagination-query.decorator';
 import { IPaginateResult } from 'src/utils/helpers/paginate-result.interface';
 import { PageDto } from 'src/utils/dto/page.dto';
 import { FindAllFarmResponseDto } from './dto/find-all-farm-response.dto';
+import { AddCropsDto } from './dto/add-crops.dto';
 
 @ApiTags('farm')
 @Controller('farm')
@@ -34,7 +35,7 @@ export class FarmController {
   
     @Get()
     @ApiOperation({
-      summary: 'Listar Fazendas',
+      summary: 'Listar fazendas',
     })
     @ApiResponse({
       status: 200,
@@ -49,7 +50,7 @@ export class FarmController {
   
     @Get(':id')
     @ApiOperation({
-      summary: 'Buscar Fazenda por ID',
+      summary: 'Buscar fazenda por ID',
     })
     @ApiResponse({
       status: 200,
@@ -68,14 +69,13 @@ export class FarmController {
   
     @Put(':id')
     @ApiOperation({
-      summary: 'Atualizar Fazenda',
+      summary: 'Atualizar fazenda',
     })
     @ApiResponse({
       status: 200,
       description: 'Fazenda atualizada com sucesso',
       type: FarmEntity,
     })
-    @ApiResponse({ status: 400, description: 'ID inválido (não é um UUID)' })
     @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
     @ApiResponse({ status: 404, description: 'Fazenda não encontrada' })
     async update(
@@ -86,10 +86,29 @@ export class FarmController {
       const traceId = req.traceId;
       return await this.farmService.update(id, updateFarmDto, traceId);
     }
+
+    @Patch(':id/crops')
+    @ApiOperation({
+      summary: 'Adicionar culturas de plantações',
+    })
+    @ApiResponse({
+      status: 200,
+      description: 'Plantações adicionadas à fazenda com sucesso',
+    })
+    @ApiResponse({ status: 400, description: 'ID inválido | A(s) cultura(s) já está(ão) vinculada(s) à fazenda' })
+    @ApiResponse({ status: 404, description: 'Fazenda não encontrada | Nenhuma cultura de plantação encontrada' })
+    async addCropsToFarm(
+      @Param('id', ParseUUIDPipe) farmId: string,
+      @Body() addCropsDto: AddCropsDto,
+      @Request() req,
+    ) {
+      const traceId = req.traceId;
+      return this.farmService.addCropsToFarm(farmId, addCropsDto, traceId);
+    }
   
     @Delete(':id')
     @ApiOperation({
-      summary: 'Remover Fazenda',
+      summary: 'Remover fazenda',
     })
     @ApiResponse({
       status: 204,

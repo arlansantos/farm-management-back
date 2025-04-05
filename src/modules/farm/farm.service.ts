@@ -10,6 +10,7 @@ import { paginate } from 'src/utils/helpers/paginate';
 import { ProducerService } from '../producer/producer.service';
 import { CropService } from '../crop/crop.service';
 import { CropEntity } from '../crop/entities/crop.entity';
+import { AddCropsDto } from './dto/add-crops.dto';
 
 @Injectable()
 export class FarmService {
@@ -55,10 +56,13 @@ export class FarmService {
 
     const queryBuilder = this.farmRepository.createQueryBuilder('farm')
       .leftJoinAndSelect('farm.producer', 'producer')
+      .leftJoinAndSelect('farm.crops', 'crops')
       .select([
         'farm',
         'producer.id',
         'producer.name',
+        'crops.id',
+        'crops.name',
       ]);
     ;
 
@@ -70,7 +74,7 @@ export class FarmService {
 
     const farm = await this.farmRepository.findOne({ 
       where: { id },
-      relations: ['producer'],
+      relations: ['producer', 'crops'],
     });
 
     if (!farm) {
@@ -120,6 +124,29 @@ export class FarmService {
     );
 
     return updatedFarm;
+  }
+
+  async addCropsToFarm(farmId: string, addCropsDto: AddCropsDto, traceId: string) {
+    this.logger.log(`[${traceId}] Adicionando culturas de plantações à fazenda com ID ${farmId}...`);
+    
+    const farm = await this.findOne(farmId, traceId);
+
+    // Filtra as novas culturas que ainda não estão associadas à fazenda
+    const existingCropIds = farm.crops.map(crop => crop.id);
+    const newCropIds = addCropsDto.cropIds.filter(id => !existingCropIds.includes(id));
+    
+    if (newCropIds.length === 0) {
+        this.logger.warn(`[${traceId}] A(s) cultura(s) já está(ão) vinculada(s) à fazenda`);
+        throw new BadRequestException(`A(s) cultura(s) já está(ão) vinculada(s) à fazenda`);
+    }
+    
+    const cropsToAdd = await this.cropService.findAllByIds(newCropIds, traceId);
+
+    farm.crops = [...farm.crops, ...cropsToAdd];
+    
+    this.logger.log(`[${traceId}] ${cropsToAdd.length} culturas de plantações adicionadas`);
+
+    return await this.farmRepository.save(farm);
   }
 
   async remove(id: string, traceId: string): Promise<void> {

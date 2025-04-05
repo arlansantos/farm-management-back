@@ -45,14 +45,14 @@ export class CreateFarmDto {
 
   @ApiProperty({
     description: 'ID do produtor dono da fazenda',
-    example: '123e4567-e89b-12d3-a456-426614174000',
+    example: '7e48ac88-ee8d-4399-8c03-1ddfa5557527',
   })
   @IsUUID(4, { message: 'ID do produtor inválido' })
   producerId: string;
 
   @ApiPropertyOptional({
     description: 'ID dos cultivos associados à fazenda',
-    example: ['123e4567-e89b-12d3-a456-426614174001'],
+    example: ['8c731c13-2985-4375-813c-7e49855fc160'],
   })
   @IsUUID(4, {each: true, message: 'ID de cultivo inválido' })
   @IsOptional()
