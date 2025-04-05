@@ -1,8 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { FarmEntity } from 'src/modules/farm/entities/farm.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -44,4 +46,7 @@ export class ProducerEntity {
   @ApiProperty()
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
+
+  @OneToMany(() => FarmEntity, farm => farm.producer)
+  farms: FarmEntity[];
 }
