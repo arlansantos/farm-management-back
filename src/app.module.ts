@@ -7,6 +7,8 @@ import { ProducerModule } from './modules/producer/producer.module';
 import { ProducerEntity } from './modules/producer/entities/producer.entity';
 import { FarmModule } from './modules/farm/farm.module';
 import { FarmEntity } from './modules/farm/entities/farm.entity';
+import { CropModule } from './modules/crop/crop.module';
+import { CropEntity } from './modules/crop/entities/crop.entity';
 
 @Module({
   imports: [
@@ -18,11 +20,12 @@ import { FarmEntity } from './modules/farm/entities/farm.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [ProducerEntity, FarmEntity],
+      entities: [ProducerEntity, FarmEntity, CropEntity],
       synchronize: true,
     }),
     ProducerModule,
     FarmModule,
+    CropModule,
   ],
   controllers: [],
   providers: [
