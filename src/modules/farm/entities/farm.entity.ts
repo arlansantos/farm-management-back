@@ -25,7 +25,7 @@ export class FarmEntity {
   @Column({name: 'vegetation_area', type: 'float' })
   vegetationArea: number;
 
-  @ApiProperty()
+  @ApiProperty({type: () => ProducerEntity})
   @ManyToOne(() => ProducerEntity, producer => producer.farms)
   @JoinColumn({ name: 'producer_id' })
   producer: ProducerEntity;
