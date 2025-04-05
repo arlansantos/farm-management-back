@@ -68,7 +68,7 @@ export class ProducerService {
     return await this.findOne(id, traceId);
   }
 
-  async remove(id: string, traceId): Promise<void> {
+  async remove(id: string, traceId: string): Promise<void> {
     this.logger.log(`[${traceId}] Removendo produtor com ID ${id}...`);
 
     const producer = await this.findOne(id, traceId);
