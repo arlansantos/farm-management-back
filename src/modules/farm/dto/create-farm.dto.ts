@@ -1,8 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   IsUUID,
@@ -48,4 +49,12 @@ export class CreateFarmDto {
   })
   @IsUUID(4, { message: 'ID do produtor inválido' })
   producerId: string;
+
+  @ApiPropertyOptional({
+    description: 'ID dos cultivos associados à fazenda',
+    example: ['123e4567-e89b-12d3-a456-426614174001'],
+  })
+  @IsUUID(4, {each: true, message: 'ID de cultivo inválido' })
+  @IsOptional()
+  cropIds?: string[];
 }

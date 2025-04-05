@@ -37,6 +37,22 @@ export class CropService {
     return await paginate( queryBuilder, 'crop', pageDto);
   }
 
+  async findAllByIds(ids: string[], traceId: string): Promise<CropEntity[]> {
+    this.logger.log(`[${traceId}] Buscando plantações por IDs...`);
+
+    const crops = await this.cropRepository
+    .createQueryBuilder('crop')
+    .where('crop.id IN (:...ids)', { ids })
+    .getMany();
+  
+    if (crops.length === 0) {
+      this.logger.warn(`[${traceId}] Nenhuma plantação encontrada com os IDs fornecidos.`);
+      throw new NotFoundException(`Nenhuma plantação encontrada com os IDs fornecidos.`);
+    }
+
+    return crops;
+  }
+
   async findOne(id: string, traceId: string): Promise<CropEntity> {
     this.logger.log(`[${traceId}] Buscando plantação com ID ${id}...`);
 

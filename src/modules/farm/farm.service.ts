@@ -8,6 +8,8 @@ import { PageDto } from 'src/utils/dto/page.dto';
 import { IPaginateResult } from 'src/utils/helpers/paginate-result.interface';
 import { paginate } from 'src/utils/helpers/paginate';
 import { ProducerService } from '../producer/producer.service';
+import { CropService } from '../crop/crop.service';
+import { CropEntity } from '../crop/entities/crop.entity';
 
 @Injectable()
 export class FarmService {
@@ -17,6 +19,7 @@ export class FarmService {
     @InjectRepository(FarmEntity)
     private readonly farmRepository: Repository<FarmEntity>,
     private readonly producerService: ProducerService,
+    private readonly cropService: CropService,
   ) {}
 
   async create(createFarmDto: CreateFarmDto, traceId: string) {
@@ -26,9 +29,16 @@ export class FarmService {
 
     const producer = await this.producerService.findOne(createFarmDto.producerId, traceId);
 
+    let crops: CropEntity[] = [];
+
+    if (createFarmDto.cropIds && createFarmDto.cropIds.length > 0) {
+      crops = await this.cropService.findAllByIds(createFarmDto.cropIds, traceId);
+    }
+    
     const farm = this.farmRepository.create({
       ...createFarmDto,
       producer,
+      crops,
     });
 
     const savedFarm = await this.farmRepository.save(farm);
