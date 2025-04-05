@@ -70,6 +70,21 @@ export class FarmService {
     return await paginate( queryBuilder, 'farm', pageDto);
   }
 
+  async getTotalFarms(traceId?: string): Promise<number> {
+    this.logger.log(`[${traceId}] Obtendo total de fazendas...`);
+    return await this.farmRepository.count();
+  }
+
+  async getTotalArea(traceId: string): Promise<number> {
+    this.logger.log(`[${traceId}] Obtendo total de área em hectares...`);
+    const result = await this.farmRepository
+      .createQueryBuilder('farm')
+      .select('SUM(farm.total_area)', 'totalArea')
+      .getRawOne();
+
+    return parseFloat(result.totalArea) || 0;
+  }
+  
   async findOne(id: string, traceId: string): Promise<FarmEntity> {
     this.logger.log(`[${traceId}] Buscando fazenda com ID ${id}...`);
 

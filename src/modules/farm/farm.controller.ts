@@ -48,6 +48,22 @@ export class FarmController {
       const traceId = req.traceId;
       return await this.farmService.findAll(pageDto, traceId);
     }
+
+    @Get('/total-farms')
+    @ApiOperation({ summary: 'Obter total de fazendas' })
+    @ApiResponse({ status: 200, description: 'Total de fazendas ', type: Number })
+    async getTotalFarms(@Request() req): Promise<number> {
+      const traceId = req.traceId;
+      return await this.farmService.getTotalFarms(traceId);
+    }
+
+    @Get('/total-area')
+    @ApiOperation({ summary: 'Obter total de área em hectares' })
+    @ApiResponse({ status: 200, description: 'Total de área em hectares' })
+    async getTotalArea(@Request() req) {
+      const traceId = req.traceId;
+      return await this.farmService.getTotalArea(traceId);
+    }
   
     @Get(':id')
     @ApiOperation({
