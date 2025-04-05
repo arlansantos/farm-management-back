@@ -11,6 +11,7 @@ import { ProducerService } from '../producer/producer.service';
 import { CropService } from '../crop/crop.service';
 import { CropEntity } from '../crop/entities/crop.entity';
 import { AddCropsDto } from './dto/add-crops.dto';
+import { RemoveCropsDto } from './dto/remove-crops.dto';
 
 @Injectable()
 export class FarmService {
@@ -157,6 +158,24 @@ export class FarmService {
     await this.farmRepository.remove(farm);
 
     this.logger.log(`[${traceId}] Fazenda com ID ${id} removida.`);
+  }
+
+  async removeCropsFromFarm(farmId: string, removeCropsDto: RemoveCropsDto, traceId: string): Promise<void> {
+    this.logger.log(`[${traceId}] Removendo culturas de plantações da fazenda com ID ${farmId}...`);
+
+    const farm = await this.findOne(farmId, traceId);
+    const initialCountCrops = farm.crops.length;
+    
+    // Verifica se as culturas a serem removidas estão associadas à fazenda
+    const cropsToRemove = removeCropsDto.cropIds;
+    farm.crops = farm.crops.filter(crop => !cropsToRemove.includes(crop.id));
+
+    if (farm.crops.length === initialCountCrops) {
+      this.logger.warn(`[${traceId}] Nenhuma das culturas informadas está associada a esta fazenda`);
+      throw new BadRequestException('Nenhuma das culturas informadas está associada a esta fazenda');
+  }
+
+    await this.farmRepository.save(farm); 
   }
 
   private validateArea(
