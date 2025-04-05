@@ -7,6 +7,8 @@ import {
   IsString,
   Length,
 } from 'class-validator';
+import { IsCNPJ } from 'src/utils/validators/cnpj.validator';
+import { IsCPF } from 'src/utils/validators/cpf.validator';
 
 export class CreateProducerDto {
   @ApiPropertyOptional({
@@ -16,6 +18,7 @@ export class CreateProducerDto {
   @IsOptional()
   @IsString()
   @Length(11, 11, { message: 'CPF deve ter exatamente 11 dígitos' })
+  @IsCPF()
   cpf?: string;
 
   @ApiPropertyOptional({
@@ -25,6 +28,7 @@ export class CreateProducerDto {
   @IsOptional()
   @IsString()
   @Length(14, 14, { message: 'CNPJ deve ter exatamente 14 dígitos' })
+  @IsCNPJ()
   cnpj?: string;
 
   @ApiProperty({
