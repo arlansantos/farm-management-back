@@ -6,8 +6,9 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  IsUppercase,
   IsUUID,
-  ValidateNested,
+  Length,
 } from 'class-validator';
 
 export class CreateFarmDto {
@@ -42,6 +43,27 @@ export class CreateFarmDto {
   @IsNumber({}, { message: 'A área de vegetação deve ser um número' })
   @IsPositive({ message: 'A área de vegetação deve ser maior que zero' })
   vegetationArea: number;
+
+  @ApiProperty({
+    description: 'Cidade onde a fazenda está localizada',
+    example: 'Rio de Janeiro',
+  })
+  @IsString({ message: 'A cidade deve ser uma string' })
+  @IsNotEmpty({ message: 'O nome da cidade é obrigatório' })
+  @Length(3, 30, {
+    message: 'O nome da cidade deve ter entre 3 e 30 caracteres'
+  })
+  city: string;
+
+  @ApiProperty({
+    description: 'Unidade Federativa (UF) onde a fazenda está localizada',
+    example: 'RJ',
+  })
+  @IsString({ message: 'A UF deve ser uma string' })
+  @IsNotEmpty({ message: 'A UF é obrigatória' })
+  @Length(2, 2, { message: 'A UF deve ter exatamente 2 caracteres' })
+  @IsUppercase({ message: 'A UF deve estar em maiúsculas' })
+  uf: string;
 
   @ApiProperty({
     description: 'ID do produtor dono da fazenda',

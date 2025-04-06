@@ -64,6 +64,26 @@ export class FarmController {
       const traceId = req.traceId;
       return await this.farmService.getTotalArea(traceId);
     }
+
+    @Get('/crops-by-state')
+    @ApiOperation({ 
+      summary: 'Obter contagem de culturas plantadas por estado',
+      description: 'Retorna um relatório de quantas fazendas cultivam cada tipo de cultura por UF'
+    })
+    @ApiResponse({ 
+      status: 200, 
+      description: 'Relatório de culturas por estado',
+      schema: {
+        example: {
+          'DF': { 'Soja': 10, 'Milho': 20 },
+          'GO': { 'Algodão': 50, 'Milho': 10 }
+        }
+      }
+    })
+    async getCropsByState(@Request() req): Promise<any> {
+      const traceId = req.traceId;
+      return await this.farmService.getCropsByState(traceId);
+    }
   
     @Get(':id')
     @ApiOperation({

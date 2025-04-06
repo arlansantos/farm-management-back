@@ -84,6 +84,32 @@ export class FarmService {
 
     return parseFloat(result.totalArea) || 0;
   }
+
+  async getCropsByState(traceId: string) {
+    this.logger.log(`[${traceId}] Obtendo culturas por estado...`);
+
+    const queryResult = await this.farmRepository
+      .createQueryBuilder('farm')
+      .select(['farm.uf', 'crop.name', 'COUNT(farm.id) as count'])
+      .innerJoin('farm.crops', 'crop')
+      .groupBy('farm.uf, crop.name')
+      .orderBy('farm.uf, count', 'DESC')
+      .getRawMany();
+
+    const result = {};
+    queryResult.forEach(row => {
+      const uf = row.farm_uf;
+      const cropName = row.crop_name;
+      const count = parseInt(row.count);
+
+      if (!result[uf]) {
+        result[uf] = {};
+      }
+      result[uf][cropName] = count;
+    });
+
+    return result;
+  }
   
   async findOne(id: string, traceId: string): Promise<FarmEntity> {
     this.logger.log(`[${traceId}] Buscando fazenda com ID ${id}...`);
@@ -115,6 +141,8 @@ export class FarmService {
       totalArea: updateFarmDto.totalArea ?? farm.totalArea,
       arableArea: updateFarmDto.arableArea ?? farm.arableArea,
       vegetationArea: updateFarmDto.vegetationArea ?? farm.vegetationArea,
+      city: updateFarmDto.city ?? farm.city,
+      uf: updateFarmDto.uf ?? farm.uf,
     });    
 
     this.validateArea(
